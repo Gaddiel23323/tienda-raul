@@ -3,54 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda Raúl - Abarrotes</title>
+    <title>Tienda Raúl - Tu Supermercado de Abarrotes</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-    <!-- ENCABEZADO Y MENÚ -->
+    <!-- FRANJA SUPERIOR INFORMATIVA -->
+    <div class="top-bar">
+        <span>🚚 Delivery gratis en Lima por compras mayores a S/ 50.00</span>
+        <span>📞 Pedidos: +51 999 888 777</span>
+    </div>
+
+    <!-- ENCABEZADO PRINCIPAL (Logo + Buscador + Menús) -->
     <header class="navbar">
-        <div class="logo">🛒 Tienda Raúl</div>
-        
-        <!-- Botón Hamburguesa (Solo visible en celular) -->
-        <button class="hamburger" id="btn-hamburger" aria-label="Abrir menú">☰</button>
-        
-        <!-- Enlaces de navegación -->
-        <nav class="nav-links" id="nav-links">
-            <a href="#" onclick="mostrarVista('inicio')">Inicio</a>
-            <a href="#" onclick="mostrarVista('carrito')">
-                Carrito de Compras (<span id="contador-carrito">0</span>)
-            </a>
-        </nav>
+        <div class="navbar-main">
+            <div class="logo" onclick="mostrarVista('inicio')">
+                🛒 <span>Tienda <strong>Raúl</strong></span>
+            </div>
+
+            <!-- Barra de búsqueda funcional -->
+            <div class="search-bar">
+                <input type="text" id="input-busqueda" placeholder="¿Qué abarrotes estás buscando hoy?" onkeyup="filtrarProductos()">
+                <button type="button" onclick="filtrarProductos()">🔍</button>
+            </div>
+
+            <!-- Botón Hamburguesa (Celular) -->
+            <button class="hamburger" id="btn-hamburger" aria-label="Abrir menú">☰</button>
+
+            <!-- Dos menús principales -->
+            <nav class="nav-links" id="nav-links">
+                <a href="#" onclick="mostrarVista('inicio')">Inicio</a>
+                <a href="#" class="btn-carrito-nav" onclick="mostrarVista('carrito')">
+                    🛒 Carrito (<span id="contador-carrito">0</span>)
+                </a>
+            </nav>
+        </div>
+
+        <!-- Barra secundaria de accesos rápidos -->
+        <div class="sub-navbar">
+            <a href="#" onclick="seleccionarCategoria('Todos')">TODOS</a>
+            <a href="#" onclick="seleccionarCategoria('Granos')">ARROZ Y MENESTRAS</a>
+            <a href="#" onclick="seleccionarCategoria('Aceites')">ACEITES Y SALSAS</a>
+            <a href="#" onclick="seleccionarCategoria('Lácteos')">LÁCTEOS Y DESAYUNO</a>
+            <a href="#" onclick="seleccionarCategoria('Conservas')">CONSERVAS Y FIDEOS</a>
+        </div>
     </header>
 
     <!-- CONTENEDOR PRINCIPAL -->
     <main class="container">
 
-        <!-- VISTA 1: INICIO (Catálogo) -->
+        <!-- VISTA 1: INICIO (Banner + Filtros + Catálogo) -->
         <section id="vista-inicio" class="vista activa">
-            <h1>Nuestros Productos</h1>
-            <div class="grid-productos" id="lista-productos">
-                <!-- JavaScript cargará los productos aquí desde Python -->
+            
+            <!-- Banner Promocional -->
+            <div class="banner-promo">
+                <div class="banner-texto">
+                    <span class="badge-oferta">OFERTAS DE LA SEMANA</span>
+                    <h2>Todo en Abarrotes para tu hogar</h2>
+                    <p>Precios bajos todos los días directo a tu mesa.</p>
+                </div>
+                <div class="banner-icono">🛍️🥫🍚</div>
+            </div>
+
+            <!-- Layout estilo Supermercado: Filtros izquierda + Productos derecha -->
+            <div class="tienda-layout">
+                
+                <!-- Barra lateral de filtros -->
+                <aside class="sidebar-filtros">
+                    <h3>FILTROS</h3>
+                    <div class="filtro-grupo">
+                        <h4>Categoría</h4>
+                        <label><input type="radio" name="cat" value="Todos" checked onchange="filtrarProductos()"> Todos los productos</label>
+                        <label><input type="radio" name="cat" value="Granos" onchange="filtrarProductos()"> Arroz y Azúcar</label>
+                        <label><input type="radio" name="cat" value="Aceites" onchange="filtrarProductos()"> Aceites</label>
+                        <label><input type="radio" name="cat" value="Lácteos" onchange="filtrarProductos()"> Lácteos</label>
+                        <label><input type="radio" name="cat" value="Conservas" onchange="filtrarProductos()"> Fideos y Conservas</label>
+                    </div>
+                </aside>
+
+                <!-- Columna de productos -->
+                <div class="catalogo-area">
+                    <div class="catalogo-header">
+                        <span id="contador-resultados">Mostrando productos</span>
+                    </div>
+                    <div class="grid-productos" id="lista-productos">
+                        <!-- JavaScript inserta aquí las tarjetas -->
+                    </div>
+                </div>
+
             </div>
         </section>
 
         <!-- VISTA 2: CARRITO DE COMPRAS -->
         <section id="vista-carrito" class="vista">
-            <h1>Tu Carrito de Compras</h1>
+            <h1 class="titulo-seccion">Tu Carrito de Compras</h1>
             <div id="contenido-carrito"></div>
             <div class="acciones-carrito" id="acciones-carrito" style="display: none;">
                 <p class="subtotal-texto">Subtotal: S/ <span id="carrito-subtotal">0.00</span></p>
-                <button class="btn-primario" onclick="irAPagar()">Ir a pagar</button>
+                <button class="btn-primario" onclick="irAPagar()">Ir a pagar →</button>
             </div>
         </section>
 
         <!-- VISTA 3: PAGO Y FACTURA -->
         <section id="vista-pago" class="vista">
-            <h1>Finalizar Compra</h1>
+            <h1 class="titulo-seccion">Finalizar Compra</h1>
             <div class="checkout-layout">
                 
-                <!-- Columna Izquierda: Formulario de datos -->
+                <!-- Formulario de datos -->
                 <form id="form-pago" class="card-pago">
                     <h2>Datos del Cliente</h2>
                     <label>Nombres y Apellidos:</label>
@@ -71,7 +130,7 @@
                     <button type="submit" class="btn-exito">Confirmar y Pagar</button>
                 </form>
 
-                <!-- Columna Derecha: Resumen tipo Factura -->
+                <!-- Factura lateral -->
                 <div class="card-pago factura">
                     <h2>Resumen de Factura</h2>
                     <div id="detalle-factura"></div>
@@ -88,7 +147,7 @@
 
     <!-- PIE DE PÁGINA -->
     <footer class="footer">
-        <p><strong>Tienda Raúl</strong> - Calidad y buenos precios todos los días</p>
+        <p><strong>Tienda Raúl</strong> - Abarrotes de calidad al mejor precio</p>
         <p>📧 Correo: contacto@tiendaraul.pe | 📱 WhatsApp: +51 999 888 777</p>
     </footer>
 

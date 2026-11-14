@@ -1,11 +1,19 @@
 let productosCatalogo = [];
 let carrito = [];
 
-// 1. Al cargar la página, pedimos los productos al backend en Python
+// Asignamos categorías visuales a los 6 productos de la BD
+const categoriasPorId = {
+    1: "Granos",
+    2: "Aceites",
+    3: "Granos",
+    4: "Lácteos",
+    5: "Conservas",
+    6: "Conservas"
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     cargarProductos();
 
-    // Evento para abrir/cerrar menú hamburguesa en celular
     document.getElementById('btn-hamburger').addEventListener('click', () => {
         document.getElementById('nav-links').classList.toggle('abierto');
     });
@@ -13,46 +21,89 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function cargarProductos() {
     const respuesta = await fetch('/api/productos');
-    productosCatalogo = await respuesta.json();
+    const datos = await respuesta.json();
     
+    productosCatalogo = datos.map(prod => ({
+        ...prod,
+        categoria: categoriasPorId[prod.id] || "Abarrotes"
+    }));
+
+    renderizarProductos(productosCatalogo);
+}
+
+function renderizarProductos(lista) {
     const contenedor = document.getElementById('lista-productos');
+    document.getElementById('contador-resultados').innerText = `${lista.length} PRODUCTOS ENCONTRADOS`;
     contenedor.innerHTML = '';
 
-    productosCatalogo.forEach(prod => {
+    if (lista.length === 0) {
+        contenedor.innerHTML = '<p>No se encontraron productos con ese filtro.</p>';
+        return;
+    }
+
+    lista.forEach(prod => {
         contenedor.innerHTML += `
             <div class="producto-card">
-                <img src="${prod.imagen}" alt="${prod.nombre}">
-                <h3>${prod.nombre}</h3>
-                <p class="precio">S/ ${prod.precio.toFixed(2)}</p>
-                <div class="control-cantidad">
-                    <label>Cant:</label>
-                    <input type="number" id="cant-${prod.id}" value="1" min="1" max="50">
+                <div>
+                    <span class="tag-categoria">${prod.categoria}</span>
+                    <img src="${prod.imagen}" alt="${prod.nombre}">
+                    <h3>${prod.nombre}</h3>
                 </div>
-                <button class="btn-agregar" onclick="agregarAlCarrito(${prod.id})">
-                    Agregar al carrito
-                </button>
+                <div>
+                    <p class="precio">S/ ${prod.precio.toFixed(2)}</p>
+                    <div class="control-cantidad">
+                        <button type="button" onclick="cambiarCantidad(${prod.id}, -1)">-</button>
+                        <input type="number" id="cant-${prod.id}" value="1" min="1" max="50" readonly>
+                        <button type="button" onclick="cambiarCantidad(${prod.id}, 1)">+</button>
+                    </div>
+                    <button class="btn-agregar" onclick="agregarAlCarrito(${prod.id})">
+                        Agregar al carrito
+                    </button>
+                </div>
             </div>
         `;
     });
 }
 
-// 2. Cambiar entre pestañas (Inicio, Carrito, Pago)
+function cambiarCantidad(idProducto, delta) {
+    const input = document.getElementById(`cant-${idProducto}`);
+    let valor = parseInt(input.value) + delta;
+    if (valor < 1) valor = 1;
+    if (valor > 50) valor = 50;
+    input.value = valor;
+}
+
+function seleccionarCategoria(cat) {
+    mostrarVista('inicio');
+    const radio = document.querySelector(`input[name="cat"][value="${cat}"]`);
+    if (radio) radio.checked = true;
+    filtrarProductos();
+}
+
+function filtrarProductos() {
+    const texto = document.getElementById('input-busqueda').value.toLowerCase();
+    const catSeleccionada = document.querySelector('input[name="cat"]:checked').value;
+
+    const filtrados = productosCatalogo.filter(prod => {
+        const coincideTexto = prod.nombre.toLowerCase().includes(texto);
+        const coincideCat = catSeleccionada === "Todos" || prod.categoria === catSeleccionada;
+        return coincideTexto && coincideCat;
+    });
+
+    renderizarProductos(filtrados);
+}
+
 function mostrarVista(nombreVista) {
     document.querySelectorAll('.vista').forEach(v => v.classList.remove('activa'));
     document.getElementById(`vista-${nombreVista}`).classList.add('activa');
-    
-    // Cierra el menú hamburguesa en móvil al hacer clic
     document.getElementById('nav-links').classList.remove('abierto');
 
     if (nombreVista === 'carrito') renderizarCarrito();
 }
 
-// 3. Agregar productos al carrito
 function agregarAlCarrito(idProducto) {
     const producto = productosCatalogo.find(p => p.id === idProducto);
     const cantidad = parseInt(document.getElementById(`cant-${idProducto}`).value);
-
-    if (cantidad <= 0 || isNaN(cantidad)) return;
 
     const itemExistente = carrito.find(item => item.id === idProducto);
     if (itemExistente) {
@@ -70,13 +121,12 @@ function actualizarContador() {
     document.getElementById('contador-carrito').innerText = totalItems;
 }
 
-// 4. Dibujar la lista del carrito
 function renderizarCarrito() {
     const contenedor = document.getElementById('contenido-carrito');
     const acciones = document.getElementById('acciones-carrito');
 
     if (carrito.length === 0) {
-        contenedor.innerHTML = '<p>Tu carrito está vacío. ¡Ve a Inicio para agregar abarrotes!</p>';
+        contenedor.innerHTML = '<p>Tu carrito está vacío. ¡Explora nuestras ofertas en Inicio!</p>';
         acciones.style.display = 'none';
         return;
     }
@@ -112,7 +162,6 @@ function eliminarDelCarrito(index) {
     renderizarCarrito();
 }
 
-// 5. Ir a la vista de Pago y calcular Factura + IGV
 function irAPagar() {
     mostrarVista('pago');
     const detalleFactura = document.getElementById('detalle-factura');
@@ -136,9 +185,8 @@ function irAPagar() {
     document.getElementById('fac-total').innerText = totalFinal.toFixed(2);
 }
 
-// 6. Enviar formulario de compra al servidor Python
 document.getElementById('form-pago').addEventListener('submit', async (e) => {
-    e.preventDefault(); // Evita que la página se recargue
+    e.preventDefault();
 
     const datosPedido = {
         nombre: document.getElementById('nombre').value,
@@ -157,7 +205,7 @@ document.getElementById('form-pago').addEventListener('submit', async (e) => {
     if (respuesta.ok) {
         const resultado = await respuesta.json();
         alert(`¡Gracias por tu compra! Tu número de pedido es #${resultado.pedido_id}`);
-        carrito = []; // Vaciamos carrito
+        carrito = [];
         actualizarContador();
         document.getElementById('form-pago').reset();
         mostrarVista('inicio');
