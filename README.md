@@ -1,6 +1,8 @@
 # Tienda Raúl - Sistema Web de Abarrotes
 
-Aplicación web full-stack sencilla para la venta de productos de abarrotes, desarrollada como proyecto de portafolio para demostrar la integración entre frontend, backend en Python y base de datos relacional.
+Proyecto full-stack nacido como una práctica académica en **SENATI** que decidí expandir y rediseñar por iniciativa propia para convertirlo en una tienda web funcional estilo retail/supermercado y sumarlo a mi portafolio de desarrollo.
+
+El objetivo fue integrar un frontend moderno y responsivo con un backend ligero en Python y persistencia de datos en SQLite, aplicando control de versiones iterativo (`v0.1`, `v0.2`).
 
 ## Características principales
 * **Navegación Responsiva:** Menú superior horizontal en escritorio y menú desplegable tipo hamburguesa en dispositivos móviles.
