@@ -271,8 +271,10 @@ body {
 
 .producto-card img {
     width: 100%;
-    height: 150px;
+    aspect-ratio: 1 / 1;
     object-fit: contain;
+    background-color: #ffffff;
+    padding: 0.5rem;
     margin-bottom: 0.6rem;
     border-radius: 6px;
 }

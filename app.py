@@ -42,12 +42,12 @@ def init_db():
     cursor.execute('SELECT COUNT(*) FROM productos')
     if cursor.fetchone()[0] == 0:
         productos_iniciales = [
-            ("Arroz Extra Costeño 5kg", 22.50, "https://placehold.co/300x200/e2e8f0/1e293b?text=Arroz+5kg"),
-            ("Aceite Vegetal Primor 1L", 11.80, "https://placehold.co/300x200/fef08a/854d0e?text=Aceite+1L"),
-            ("Azúcar Rubia Cartavio 1kg", 4.50, "https://placehold.co/300x200/fed7aa/9a3412?text=Azucar+1kg"),
-            ("Leche Evaporada Gloria (Pack x6)", 24.00, "https://placehold.co/300x200/bfdbfe/1e3a8a?text=Leche+Pack"),
-            ("Fideos Spaghetti Don Vittorio 500g", 3.20, "https://placehold.co/300x200/fde68a/78350f?text=Fideos+500g"),
-            ("Atún Filete Florida 170g", 6.50, "https://placehold.co/300x200/fecaca/7f1d1d?text=Atun+170g")
+            ("Arroz Extra Costeño 5kg", 22.50, "/static/img/arroz_costeño.webp"),
+            ("Aceite Vegetal Primor 1L", 11.80, "/static/img/aceite_primor.jpg"),
+            ("Azúcar Rubia Cartavio 1kg", 4.50, "/static/img/azucar_cartavio.webp"),
+            ("Leche Evaporada Gloria (Pack x6)", 24.00, "/static/img/leche_gloria.webp"),
+            ("Fideos Spaghetti Don Vittorio 500g", 3.20, "/static/img/fideos_don_victorio.webp"),
+            ("Atún Filete Florida 170g", 6.50, "/static/img/atun_florida.jpg")
         ]
         cursor.executemany('INSERT INTO productos (nombre, precio, imagen) VALUES (?, ?, ?)', productos_iniciales)
     

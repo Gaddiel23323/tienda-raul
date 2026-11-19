@@ -113,7 +113,16 @@ function agregarAlCarrito(idProducto) {
     }
 
     actualizarContador();
-    alert(`Se agregó ${cantidad}x ${producto.nombre} al carrito.`);
+    // Alerta flotante moderna (Toast) con SweetAlert2
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: `Agregado: ${cantidad}x ${producto.nombre}`,
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true
+    });
 }
 
 function actualizarContador() {
@@ -204,7 +213,14 @@ document.getElementById('form-pago').addEventListener('submit', async (e) => {
 
     if (respuesta.ok) {
         const resultado = await respuesta.json();
-        alert(`¡Gracias por tu compra! Tu número de pedido es #${resultado.pedido_id}`);
+        Swal.fire({
+            icon: 'success',
+            title: '¡Compra Confirmada!',
+            text: `Gracias por comprar en Tienda Raúl. Tu número de pedido es #${resultado.pedido_id}`,
+            confirmButtonColor: '#dc2626',
+            confirmButtonText: 'Seguir comprando'
+        });
+
         carrito = [];
         actualizarContador();
         document.getElementById('form-pago').reset();
